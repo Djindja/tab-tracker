@@ -1,13 +1,29 @@
 <template>
-  <div>
-    <h1>Register</h1>
-
-    <input type="email" name="email" v-model="email" placeholder="email" /><br>
-    <input type="password" name="password" v-model="password" placeholder="password" /><br>
-
-    <div class="error" v-html="error"></div><br>
-    <button @click="register">Register</button>
-  </div>
+  <v-layout column>
+    <v-flex xs6 offset-xs3>
+      <panel title="Login">
+        <v-text-field
+          label="Email"
+          v-model="email"
+        ></v-text-field>
+        <br>
+        <v-text-field
+          label="Password"
+          type="password"
+          v-model="password"
+        ></v-text-field>
+        <br>
+        <div class="danger-alert" v-html="error" />
+        <br>
+        <v-btn
+          dark
+          class="cyan"
+          @click="login">
+          Login
+        </v-btn>
+      </panel>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -22,14 +38,14 @@ export default {
     }
   },
   methods: {
-    async register () {
+    async login () {
       try {
-        const response = await AuthenticationService.register({
+        const response = await AuthenticationService.login({
           email: this.email,
           password: this.password
         })
-
-        console.log(response)
+        this.$store.dispatch('setToken', response.data.token)
+        this.$store.dispatch('setUser', response.data.user)
       } catch (error) {
         this.error = error.response.data.error
       }
@@ -39,7 +55,4 @@ export default {
 </script>
 
 <style scoped>
-.error {
-  color: red;
-}
 </style>
